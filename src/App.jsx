@@ -3777,6 +3777,17 @@ function MainApp({ authed = true, onSignupStart, onLoginStart }) {
   const [messagesLoaded, setMessagesLoaded] = useState(false);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
+
+  // continue 타이머 + chain 제한
+  const continueTimerRef = useRef(null);
+  const continueChainRef = useRef(false); // true면 직전 응답이 continue, 또 박지 않음
+
+  const cancelContinueTimer = () => {
+    if (continueTimerRef.current) {
+      clearTimeout(continueTimerRef.current);
+      continueTimerRef.current = null;
+    }
+  };
   const [posts, setPosts] = useState(FEED_POSTS);
   const bottomRef = useRef(null);
 
@@ -3917,6 +3928,7 @@ function MainApp({ authed = true, onSignupStart, onLoginStart }) {
 
     // greeting 호출
     let cancelled = false;
+    continueChainRef.current = false; // chain 리셋
     setTyping(true);
     (async () => {
       try {
@@ -3935,6 +3947,7 @@ function MainApp({ authed = true, onSignupStart, onLoginStart }) {
             note: null,
             created_at: new Date().toISOString(),
           }]);
+          scheduleContinueIfNeeded(data.reply);
         }
       } catch (e) {
         console.error("greeting 예외:", e);
@@ -3945,6 +3958,21 @@ function MainApp({ authed = true, onSignupStart, onLoginStart }) {
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, authed, user?.id, messagesLoaded]);
+
+  // 탭 떠나거나 unmount면 continue 타이머 취소
+  useEffect(() => {
+    if (tab !== "털어놓기") {
+      cancelContinueTimer();
+    }
+  }, [tab]);
+  useEffect(() => {
+    return () => cancelContinueTimer();
+  }, []);
+
+  // 사용자가 입력창에 글자 박으면 타이머 취소
+  useEffect(() => {
+    if (input.trim()) cancelContinueTimer();
+  }, [input]);
 
   // 자치구 변경 시 localStorage에도 저장
   const changeGu = async (gu) => {
@@ -3989,9 +4017,51 @@ function MainApp({ authed = true, onSignupStart, onLoginStart }) {
     }
   };
 
+  // 직전 AI 응답이 짧고 ?로 안 끝나면 5초 후 continue 호출
+  const scheduleContinueIfNeeded = (aiReply) => {
+    if (!aiReply) return;
+    if (continueChainRef.current) return; // 직전이 continue면 또 X
+    const trimmed = aiReply.trim();
+    if (trimmed.length > 80) return; // 충분히 길면 X
+    if (trimmed.endsWith("?")) return; // 질문이면 X (사용자가 답할 차례)
+
+    cancelContinueTimer();
+    continueTimerRef.current = setTimeout(async () => {
+      continueTimerRef.current = null;
+      // 사용자가 다른 탭에 있거나 입력 중이면 취소
+      if (tab !== "털어놓기") return;
+      if (typing) return;
+      if (input.trim()) return; // 입력창에 글자 있으면 X
+      if (document.visibilityState !== "visible") return;
+
+      continueChainRef.current = true;
+      setTyping(true);
+      try {
+        const { data, error } = await supabase.functions.invoke("chat", {
+          body: { trigger: "continue" },
+        });
+        if (error) throw error;
+        if (data?.reply) {
+          setMessages((p) => [...p, {
+            from: "ai",
+            text: data.reply,
+            note: null,
+            created_at: new Date().toISOString(),
+          }]);
+        }
+      } catch (e) {
+        console.error("continue 호출 실패:", e);
+      } finally {
+        setTyping(false);
+      }
+    }, 5000);
+  };
+
   const sendMessage = async () => {
     if (!requireAuth()) return;
     if (!input.trim() || typing) return;
+    cancelContinueTimer();
+    continueChainRef.current = false; // 사용자가 박으면 chain 리셋
     const txt = input.trim();
     setInput("");
     setMessages((p) => [...p, { from: "user", text: txt, created_at: new Date().toISOString() }]);
@@ -4003,6 +4073,7 @@ function MainApp({ authed = true, onSignupStart, onLoginStart }) {
       if (error) throw error;
       const reply = data?.reply || "응답을 받지 못했어요. 다시 한 번 말씀해주실래요?";
       setMessages((p) => [...p, { from: "ai", text: reply, note: null, created_at: new Date().toISOString() }]);
+      scheduleContinueIfNeeded(reply);
     } catch (e) {
       console.error("sendMessage 실패:", e);
       setMessages((p) => [...p, {
