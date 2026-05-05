@@ -3390,10 +3390,12 @@ function Settings({ onClose, userGu }) {
     try {
       localStorage.removeItem("orot_user_gu");
       localStorage.removeItem("orot_mood_log");
+      localStorage.removeItem("sb-orot-auth-token");
       await supabase.auth.signOut();
-      // location.reload() 안 해도 onAuthStateChange가 SIGNED_OUT 감지해서 자동 라우팅
+      window.location.reload();
     } catch (e) {
       console.error("로그아웃 실패:", e);
+      window.location.reload();
     }
   };
 
