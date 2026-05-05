@@ -963,8 +963,8 @@ function AuthFlow({ mode: initialMode, onCancel }) {
         setLoading(false);
         return;
       }
-      // 성공 — onAuthStateChange가 라우팅. 라우팅 늦어지면 사용자가 재시도 가능하게 풀어둠
-      setLoading(false);
+      // 성공 — 페이지 새로고침으로 확실하게 라우팅
+      window.location.reload();
     } catch (e) {
       setError(e.message || "다시 시도해주세요");
       setLoading(false);
