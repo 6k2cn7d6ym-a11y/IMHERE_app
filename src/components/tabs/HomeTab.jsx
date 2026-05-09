@@ -23,6 +23,7 @@ export default function HomeTab({
   userGu,
   openGuModal,
   openSettings,
+  onCrisisOpen,
 }) {
   const emotion = EMOTIONS.find((e) => e.label === todayMood);
   const h = new Date().getHours();
@@ -155,7 +156,7 @@ export default function HomeTab({
         </div>
       )}
 
-      {/* 부정 3일 이상 유도 배너 */}
+      {/* 부정 3일 이상 유도 배너 (7일 이상이면 위기 진입 결도 박힘) */}
       {negDays >= 3 && (
         <div className="up" style={{ background: "#FDF0EA", border: `1px solid ${C.warmLight}`, borderRadius: 16, padding: "18px 20px", marginBottom: 20 }}>
           <div style={{ fontFamily: "'Noto Serif KR',serif", fontSize: 15, color: C.warm, marginBottom: 6 }}>
@@ -164,10 +165,15 @@ export default function HomeTab({
           <div style={{ fontSize: 13, color: C.sub, lineHeight: 1.75, marginBottom: 14, fontWeight: 300 }}>
             {negDays}일째 힘드신 것 같아 마음에 걸려요.<br />혼자 담아두지 말고 들려주세요.
           </div>
-          <div style={{ display: "flex", gap: 10 }}>
+          <div style={{ display: "flex", gap: 10, flexDirection: negDays >= 7 ? "column" : "row" }}>
             <button onClick={() => setTab("털어놓기")} style={{ flex: 1, background: C.warm, color: "#fff", padding: "11px", borderRadius: 8, fontSize: 13 }}>
               오로시에게 들려주기
             </button>
+            {negDays >= 7 && onCrisisOpen && (
+              <button onClick={onCrisisOpen} style={{ flex: 1, background: "transparent", color: C.warm, padding: "11px", borderRadius: 8, fontSize: 13, border: `1px solid ${C.warm}` }}>
+                지금 너무 힘드시다면
+              </button>
+            )}
           </div>
         </div>
       )}

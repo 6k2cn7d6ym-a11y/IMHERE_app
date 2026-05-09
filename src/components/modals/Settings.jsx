@@ -6,7 +6,7 @@ import { dateKey, yesterdayKey, targetWeekStartKey, formatWeekRange } from "../.
 import OrotCareModal from "./OrotCareModal";
 
 // ───────── 마이페이지 ─────────
-export function MyPage({ authed, onSignupStart, onLoginStart, userGu, moodLog, streak, setDiaryView, openSettings, openGuModal }) {
+export function MyPage({ authed, onSignupStart, onLoginStart, userGu, moodLog, streak, setDiaryView, openSettings, openGuModal, onCrisisOpen }) {
   const { user, profile: ctxProfile } = useAuth();
   const profile = ctxProfile || { nickname: "", gu: null };
 
@@ -372,21 +372,36 @@ export function MyPage({ authed, onSignupStart, onLoginStart, userGu, moodLog, s
         </>
       )}
 
-      {/* 24시간 공공 자원 */}
-      <div style={{ fontSize: 11, color: C.muted, fontWeight: 300, letterSpacing: 0.5, marginBottom: 8, paddingLeft: 4 }}>
-        24시간 공공 자원
-      </div>
-      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: "14px 18px" }}>
-        <div style={{ fontSize: 13, color: C.text, fontWeight: 400, marginBottom: 4 }}>
-          정신건강위기상담전화
+      {/* 위기 진입 결 — 외부 통화 4개 + 자치구 정신건강복지센터 */}
+      <button
+        onClick={onCrisisOpen}
+        style={{
+          width: "100%",
+          background: C.surface,
+          color: C.text,
+          border: `1px solid ${C.warmLight}`,
+          borderRadius: 14,
+          padding: "16px 18px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          textAlign: "left",
+          cursor: "pointer",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{ fontSize: 20 }}>🌿</span>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 500, color: C.text, marginBottom: 4 }}>
+              지금 너무 힘드시다면
+            </div>
+            <div style={{ fontSize: 11, color: C.muted, fontWeight: 300, lineHeight: 1.5 }}>
+              24시간 자원 + 자치구 정신건강복지센터
+            </div>
+          </div>
         </div>
-        <a
-          href="tel:1577-0199"
-          style={{ fontSize: 15, color: C.warm, fontWeight: 500, textDecoration: "none" }}
-        >
-          1577-0199
-        </a>
-      </div>
+        <span style={{ fontSize: 14, color: C.muted }}>›</span>
+      </button>
     </div>
   );
 }

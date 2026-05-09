@@ -14,6 +14,7 @@ import DiaryTab from "./tabs/DiaryTab";
 import PostComposeModal from "./modals/PostComposeModal";
 import GuModal from "./modals/GuModal";
 import LoginPromptModal from "./modals/LoginPromptModal";
+import CrisisModal from "./modals/CrisisModal";
 import Settings, { MyPage } from "./modals/Settings";
 
 // 메인앱 - 4개 탭 + 설정/모달
@@ -30,6 +31,7 @@ export default function MainApp({ authed = true, onSignupStart, onLoginStart }) 
   const [guModalOpen, setGuModalOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [crisisModalOpen, setCrisisModalOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [messagesLoaded, setMessagesLoaded] = useState(false);
   const [input, setInput] = useState("");
@@ -550,6 +552,7 @@ export default function MainApp({ authed = true, onSignupStart, onLoginStart }) 
             userGu={userGu}
             openGuModal={() => { if (requireAuth()) setGuModalOpen(true); }}
             openSettings={() => { if (requireAuth()) setSettingsOpen(true); }}
+            onCrisisOpen={() => setCrisisModalOpen(true)}
           />
         )}
         {tab === "홈" && diaryView && <DiaryTab moodLog={moodLog} moodLogsByDate={moodLogsByDate} setDiaryView={setDiaryView} />}
@@ -568,6 +571,7 @@ export default function MainApp({ authed = true, onSignupStart, onLoginStart }) 
             setDiaryView={setDiaryView}
             openSettings={() => { if (requireAuth()) setSettingsOpen(true); }}
             openGuModal={() => { if (requireAuth()) setGuModalOpen(true); }}
+            onCrisisOpen={() => setCrisisModalOpen(true)}
           />
         )}
         {tab === "마이" && diaryView && <DiaryTab moodLog={moodLog} moodLogsByDate={moodLogsByDate} setDiaryView={setDiaryView} />}
@@ -575,6 +579,7 @@ export default function MainApp({ authed = true, onSignupStart, onLoginStart }) 
 
       {guModalOpen && <GuModal currentGu={userGu} onSelect={changeGu} onClose={() => setGuModalOpen(false)} />}
       {settingsOpen && <Settings onClose={() => setSettingsOpen(false)} userGu={userGu} />}
+      {crisisModalOpen && <CrisisModal onClose={() => setCrisisModalOpen(false)} userGu={userGu} />}
       {loginModalOpen && (
         <LoginPromptModal
           onClose={() => setLoginModalOpen(false)}
