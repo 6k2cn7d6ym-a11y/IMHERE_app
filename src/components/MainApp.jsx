@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { C, GU_LIST, CRISIS_KEYWORDS } from "../lib/constants";
+import { C, GU_LIST, CRISIS_KEYWORDS, GU_LOCK_MESSAGE } from "../lib/constants";
 import { useAuth } from "../lib/AuthContext";
 import { supabase } from "../lib/supabase";
 import { todayKey, formatRelativeTime } from "../utils/date";
@@ -236,7 +236,13 @@ export default function MainApp({ authed = true, onSignupStart, onLoginStart }) 
   }, [input]);
 
   // 자치구 변경 시 localStorage에도 저장
+  // 발급번호 연결된 사용자는 잠금 (UI에서도 막지만 함수 차원에서 한 번 더)
   const changeGu = async (gu) => {
+    if (profile?.verified_at) {
+      alert(GU_LOCK_MESSAGE);
+      setGuModalOpen(false);
+      return;
+    }
     setUserGu(gu);
     try { localStorage.setItem("orot_user_gu", gu); } catch (_) {}
     setGuModalOpen(false);
@@ -248,6 +254,8 @@ export default function MainApp({ authed = true, onSignupStart, onLoginStart }) 
       }
     }
   };
+
+  const guLocked = !!profile?.verified_at;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -553,6 +561,7 @@ export default function MainApp({ authed = true, onSignupStart, onLoginStart }) 
             openGuModal={() => { if (requireAuth()) setGuModalOpen(true); }}
             openSettings={() => { if (requireAuth()) setSettingsOpen(true); }}
             onCrisisOpen={() => setCrisisModalOpen(true)}
+            guLocked={guLocked}
           />
         )}
         {tab === "홈" && diaryView && <DiaryTab moodLog={moodLog} moodLogsByDate={moodLogsByDate} setDiaryView={setDiaryView} />}

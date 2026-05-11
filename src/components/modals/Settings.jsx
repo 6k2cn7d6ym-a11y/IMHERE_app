@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { C, GU_CENTERS } from "../../lib/constants";
+import { C, GU_CENTERS, GU_LOCK_MESSAGE } from "../../lib/constants";
 import { useAuth } from "../../lib/AuthContext";
 import { supabase } from "../../lib/supabase";
 import { dateKey, yesterdayKey, targetWeekStartKey, formatWeekRange } from "../../utils/date";
@@ -10,6 +10,7 @@ import { useConnectedDistricts } from "../../lib/useConnectedDistricts";
 export function MyPage({ authed, onSignupStart, onLoginStart, userGu, moodLog, streak, setDiaryView, openSettings, openGuModal, onCrisisOpen }) {
   const { user, profile: ctxProfile } = useAuth();
   const profile = ctxProfile || { nickname: "", gu: null };
+  const guLocked = !!ctxProfile?.verified_at;
 
   const [dailySummary, setDailySummary] = useState(null);
   const [dailyLoading, setDailyLoading] = useState(false);
@@ -224,11 +225,20 @@ export function MyPage({ authed, onSignupStart, onLoginStart, userGu, moodLog, s
             </div>
             {userGu && (
               <button
-                onClick={openGuModal}
-                style={{ fontSize: 12, color: C.sub, display: "inline-flex", alignItems: "center", gap: 3, padding: 0 }}
+                onClick={() => guLocked ? alert(GU_LOCK_MESSAGE) : openGuModal()}
+                style={{
+                  fontSize: 12,
+                  color: C.sub,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 3,
+                  padding: 0,
+                  opacity: guLocked ? 0.7 : 1,
+                  cursor: guLocked ? "default" : "pointer",
+                }}
               >
                 <span>📍 {userGu}</span>
-                <span style={{ fontSize: 9, color: C.muted }}>▾</span>
+                <span style={{ fontSize: 9, color: C.muted }}>{guLocked ? "🔒" : "▾"}</span>
               </button>
             )}
           </div>
@@ -816,8 +826,12 @@ export default function Settings({ onClose, userGu }) {
             <SettingsItem label="프로필" sub={profile?.nickname || "닉네임 미설정"} onClick={() => { setNickname(profile?.nickname || ""); setView("nickname"); }} />
             <SettingsItem
               label="자치구"
-              sub={userGu || "선택 안 됨"}
-              onClick={() => alert("자치구 변경 — 홈 화면 좌측 상단의 자치구 칩으로 변경하실 수 있어요")}
+              sub={userGu ? (verifiedAt ? `${userGu} 🔒` : userGu) : "선택 안 됨"}
+              onClick={() =>
+                verifiedAt
+                  ? alert(GU_LOCK_MESSAGE)
+                  : alert("자치구 변경 — 홈 화면 좌측 상단의 자치구 칩으로 변경하실 수 있어요")
+              }
             />
             <SettingsItem
               label="자치구 부여번호"

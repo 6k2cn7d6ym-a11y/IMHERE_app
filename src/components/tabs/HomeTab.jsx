@@ -6,6 +6,7 @@ import {
   POSITIVE_PROMPTS,
   MOOD_MSGS,
   DAY_KR,
+  GU_LOCK_MESSAGE,
 } from "../../lib/constants";
 import { dateKey } from "../../utils/date";
 
@@ -24,6 +25,7 @@ export default function HomeTab({
   openGuModal,
   openSettings,
   onCrisisOpen,
+  guLocked,
 }) {
   const emotion = EMOTIONS.find((e) => e.label === todayMood);
   const h = new Date().getHours();
@@ -45,7 +47,7 @@ export default function HomeTab({
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
         {authed && userGu ? (
           <button
-            onClick={openGuModal}
+            onClick={() => guLocked ? alert(GU_LOCK_MESSAGE) : openGuModal()}
             style={{
               background: C.surface,
               border: `1px solid ${C.border}`,
@@ -58,11 +60,13 @@ export default function HomeTab({
               color: C.sub,
               fontWeight: 400,
               letterSpacing: 0.3,
+              opacity: guLocked ? 0.7 : 1,
+              cursor: guLocked ? "default" : "pointer",
             }}
           >
             <span style={{ fontSize: 11, marginRight: 2 }}>📍</span>
             <span>{userGu}</span>
-            <span style={{ fontSize: 9, color: C.muted, marginLeft: 2 }}>▾</span>
+            <span style={{ fontSize: 9, color: C.muted, marginLeft: 2 }}>{guLocked ? "🔒" : "▾"}</span>
           </button>
         ) : (
           <div />
