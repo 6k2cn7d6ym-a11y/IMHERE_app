@@ -121,7 +121,7 @@ export default function CrisisContent({ userGu }) {
         }}
       >
         전화하기 어려우시면<br />
-        Heri와 더 이야기 나누셔도 돼요.
+        오로시와 더 이야기 나누셔도 돼요.
       </div>
     </div>
   );

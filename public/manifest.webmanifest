@@ -11,19 +11,19 @@
   "theme_color": "#9B5E45",
   "icons": [
     {
-      "src": "/icons/orot-android-180.png",
+      "src": "/icons/imhere-android-180.png",
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/orot-android-512.png",
+      "src": "/icons/imhere-android-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/orot-android-1024.png",
+      "src": "/icons/imhere-android-1024.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"

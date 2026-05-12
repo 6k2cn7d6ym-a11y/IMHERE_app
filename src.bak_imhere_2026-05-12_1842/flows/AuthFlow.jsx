@@ -150,8 +150,8 @@ export default function AuthFlow({ mode: initialMode, onCancel }) {
             </div>
             <div style={{ fontSize: 13, color: C.muted, fontWeight: 300, lineHeight: 1.7 }}>
               {mode === "login"
-                ? "IMHERE에 다시 오신 걸 환영해요"
-                : "IMHERE에 오신 걸 환영해요"}
+                ? "오롯에 다시 오신 걸 환영해요"
+                : "오롯에 오신 걸 환영해요"}
             </div>
           </div>
 

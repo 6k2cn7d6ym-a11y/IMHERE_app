@@ -41,7 +41,7 @@ export default function Complete({ nickname, mood, gu, onStart }) {
         </div>
       )}
       <div style={{ fontSize: 14, color: C.sub, fontWeight: 300, lineHeight: 1.8, marginBottom: 48 }}>
-        IMHERE이 너의 자리예요.<br />
+        오롯이 너의 자리예요.<br />
         힘드실 때, 외로우실 때, 그냥 말하고 싶으실 때<br />
         언제든 오세요.
       </div>

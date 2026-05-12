@@ -95,7 +95,7 @@ export default function HomeTab({
       {!authed && (
         <div style={{ marginBottom: 32 }}>
           <div style={{ fontFamily: "'Noto Serif KR',serif", fontSize: 24, fontWeight: 400, lineHeight: 1.4, marginBottom: 6 }}>
-            IMHERE에 오신 걸<br />
+            오롯에 오신 걸<br />
             <span style={{ color: C.warm }}>환영해요</span>
           </div>
           <div style={{ fontSize: 13, color: C.sub, lineHeight: 1.7, fontWeight: 300, marginBottom: 20 }}>
@@ -126,7 +126,7 @@ export default function HomeTab({
           </button>
           <div style={{ height: 1, background: C.border, margin: "24px 0 8px" }} />
           <div style={{ fontSize: 11, color: C.muted, fontWeight: 300, textAlign: "center" }}>
-            아래에서 IMHERE을 둘러보실 수 있어요
+            아래에서 오롯을 둘러보실 수 있어요
           </div>
         </div>
       )}
@@ -135,7 +135,7 @@ export default function HomeTab({
       {authed && (
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 36 }}>
           <div>
-            <div style={{ fontSize: 11, letterSpacing: 1.5, color: C.muted, marginBottom: 10, fontWeight: 300 }}>Heri</div>
+            <div style={{ fontSize: 11, letterSpacing: 1.5, color: C.muted, marginBottom: 10, fontWeight: 300 }}>오로시</div>
             <div style={{ fontFamily: "'Noto Serif KR',serif", fontSize: 28, fontWeight: 400, lineHeight: 1.35 }}>
               {greet}<br />
               <span style={{ color: C.warm }}>오늘 기분은 어떠세요?</span>
@@ -171,7 +171,7 @@ export default function HomeTab({
           </div>
           <div style={{ display: "flex", gap: 10, flexDirection: negDays >= 7 ? "column" : "row" }}>
             <button onClick={() => setTab("털어놓기")} style={{ flex: 1, background: C.warm, color: "#fff", padding: "11px", borderRadius: 8, fontSize: 13 }}>
-              Heri에게 들려주기
+              오로시에게 들려주기
             </button>
             {negDays >= 7 && onCrisisOpen && (
               <button onClick={onCrisisOpen} style={{ flex: 1, background: "transparent", color: C.warm, padding: "11px", borderRadius: 8, fontSize: 13, border: `1px solid ${C.warm}` }}>
@@ -217,7 +217,7 @@ export default function HomeTab({
           </div>
           <div style={{ display: "flex", gap: 10 }}>
             <button onClick={() => setTab("털어놓기")} style={{ flex: 1, background: C.dark, color: "#fff", padding: "14px", borderRadius: 8, fontSize: 13, letterSpacing: 0.3 }}>
-              {isPositive ? "Heri에게 들려주기" : "혼잣말하기"}
+              {isPositive ? "오로시에게 들려주기" : "혼잣말하기"}
             </button>
             <button onClick={() => setDiaryView(true)} style={{ flex: 1, background: C.surface, color: C.sub, padding: "14px", borderRadius: 8, fontSize: 13, border: `1px solid ${C.border}` }}>
               기분 기록

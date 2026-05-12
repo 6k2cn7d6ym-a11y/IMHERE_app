@@ -20,7 +20,7 @@ export default function SetupFlow({ onComplete }) {
   // - 둘 다 있으면 → 3 (첫 기분)
   const computeInitialStep = () => {
     let slidesSeen = false;
-    try { slidesSeen = localStorage.getItem("imhere_slides_seen") === "1"; } catch {}
+    try { slidesSeen = localStorage.getItem("orot_slides_seen") === "1"; } catch {}
     if (!slidesSeen) return 0;
     if (!profile?.nickname) return 1;
     if (!profile?.gu) return 2;
@@ -57,7 +57,7 @@ export default function SetupFlow({ onComplete }) {
       try {
         if (user) {
           await supabase.from("profiles").update({ gu: selectedGu }).eq("id", user.id);
-          try { localStorage.setItem("imhere_user_gu", selectedGu); } catch {}
+          try { localStorage.setItem("orot_user_gu", selectedGu); } catch {}
         }
       } catch (e) {
         console.error("자치구 저장 실패:", e);
@@ -80,7 +80,7 @@ export default function SetupFlow({ onComplete }) {
   // step 0 = 슬라이드 (자체 레이아웃) — 한 번 보면 localStorage 박아서 다시 안 보임
   if (step === 0) {
     return <WelcomeSlides onComplete={() => {
-      try { localStorage.setItem("imhere_slides_seen", "1"); } catch {}
+      try { localStorage.setItem("orot_slides_seen", "1"); } catch {}
       // 슬라이드 끝났을 때 profile에 이미 nickname/gu가 있으면 그 step으로 jump
       if (!profile?.nickname) setStep(1);
       else if (!profile?.gu) setStep(2);

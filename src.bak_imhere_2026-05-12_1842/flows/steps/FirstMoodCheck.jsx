@@ -113,7 +113,7 @@ export default function FirstMoodCheck({ selectedMood, setSelectedMood, setDone 
             cursor: selectedMood ? "pointer" : "default",
           }}
         >
-          {selectedMood ? "IMHERE 시작하기 →" : "기분을 골라주세요"}
+          {selectedMood ? "오롯 시작하기 →" : "기분을 골라주세요"}
         </button>
         <button
           onClick={() => setDone(true)}

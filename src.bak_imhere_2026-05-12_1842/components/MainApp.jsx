@@ -64,7 +64,7 @@ export default function MainApp({ authed = true, onSignupStart, onLoginStart }) 
   // 초기 데이터: localStorage 캐시 + DB 진실
   useEffect(() => {
     try {
-      const raw = localStorage.getItem("imhere_mood_log");
+      const raw = localStorage.getItem("orot_mood_log");
       if (raw) {
         const log = JSON.parse(raw);
         setMoodLog(log);
@@ -72,7 +72,7 @@ export default function MainApp({ authed = true, onSignupStart, onLoginStart }) 
       }
     } catch (_) {}
     try {
-      const gu = localStorage.getItem("imhere_user_gu");
+      const gu = localStorage.getItem("orot_user_gu");
       if (gu && GU_LIST.includes(gu)) setUserGu(gu);
     } catch (_) {}
 
@@ -91,7 +91,7 @@ export default function MainApp({ authed = true, onSignupStart, onLoginStart }) 
         if (cancelled) return;
         if (profile?.gu && GU_LIST.includes(profile.gu)) {
           setUserGu(profile.gu);
-          try { localStorage.setItem("imhere_user_gu", profile.gu); } catch (_) {}
+          try { localStorage.setItem("orot_user_gu", profile.gu); } catch (_) {}
         }
 
         // mood_logs 최근 60일치
@@ -114,7 +114,7 @@ export default function MainApp({ authed = true, onSignupStart, onLoginStart }) 
           setMoodLog(log);
           setMoodLogsByDate(byDate);
           if (log[todayKey()]) setTodayMood(log[todayKey()]);
-          try { localStorage.setItem("imhere_mood_log", JSON.stringify(log)); } catch (_) {}
+          try { localStorage.setItem("orot_mood_log", JSON.stringify(log)); } catch (_) {}
         }
       } catch (e) {
         console.error("초기 데이터 불러오기 실패:", e);
@@ -171,7 +171,7 @@ export default function MainApp({ authed = true, onSignupStart, onLoginStart }) 
     return () => { mounted = false; };
   }, [authed, user?.id]);
 
-  // 채팅 탭 진입 — 30분 이상 비어있었으면 Heri가 먼저 인사
+  // 채팅 탭 진입 — 30분 이상 비어있었으면 오로시가 먼저 인사
   useEffect(() => {
     if (tab !== "털어놓기") return;
     if (!authed || !user) return;
@@ -243,7 +243,7 @@ export default function MainApp({ authed = true, onSignupStart, onLoginStart }) 
       return;
     }
     setUserGu(gu);
-    try { localStorage.setItem("imhere_user_gu", gu); } catch (_) {}
+    try { localStorage.setItem("orot_user_gu", gu); } catch (_) {}
     setGuModalOpen(false);
     if (authed && user) {
       try {
@@ -271,7 +271,7 @@ export default function MainApp({ authed = true, onSignupStart, onLoginStart }) 
       ...prev,
       [today]: [...(prev[today] || []), { label, time: now }],
     }));
-    try { localStorage.setItem("imhere_mood_log", JSON.stringify(newLog)); } catch (_) {}
+    try { localStorage.setItem("orot_mood_log", JSON.stringify(newLog)); } catch (_) {}
     try {
       if (user) {
         await supabase.from("mood_logs").insert({

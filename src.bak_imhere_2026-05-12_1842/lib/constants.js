@@ -139,7 +139,7 @@ export const GU_CENTERS = {
 // data.seoul.go.kr 마이페이지 > 인증키 관리에서 발급
 export const OPENAPI_KEY = "686752756c6b6a6939365446737952";
 export const OPENAPI_SERVICE = "tbPartcptn"; // 1인가구 참여프로그램 현황
-export const CACHE_KEY = "imhere:programs:v1";
+export const CACHE_KEY = "orot:programs:v1";
 export const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6시간
 
 // 정서 매칭 키워드 (외로움 카테고리는 무조건 통과, 기타 카테고리는 키워드로)

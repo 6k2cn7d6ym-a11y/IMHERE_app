@@ -35,7 +35,7 @@ export default function OrosiChat({ messages, input, setInput, sendMessage, typi
               className="up"
               style={{ marginBottom: 20, display: "flex", flexDirection: "column", alignItems: msg.from === "user" ? "flex-end" : "flex-start" }}
             >
-              {msg.from === "ai" && <div style={{ fontSize: 10, color: C.muted, marginBottom: 6 }}>Heri</div>}
+              {msg.from === "ai" && <div style={{ fontSize: 10, color: C.muted, marginBottom: 6 }}>오로시</div>}
               <div
                 style={{
                   maxWidth: "76%",
@@ -63,7 +63,7 @@ export default function OrosiChat({ messages, input, setInput, sendMessage, typi
         })}
         {typing && (
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 10, color: C.muted, marginBottom: 6 }}>Heri</div>
+            <div style={{ fontSize: 10, color: C.muted, marginBottom: 6 }}>오로시</div>
             <div style={{ display: "inline-flex", gap: 5, padding: "13px 18px", background: C.surface, borderRadius: "4px 20px 20px 20px", boxShadow: "0 2px 12px rgba(26,16,10,.06)" }}>
               {[0, 1, 2].map((i) => (
                 <span key={i} style={{ width: 5, height: 5, borderRadius: "50%", background: C.muted, display: "block", animation: `dot 1.2s ${i * 0.2}s infinite` }} />

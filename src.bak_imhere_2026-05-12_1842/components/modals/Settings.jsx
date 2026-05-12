@@ -3,7 +3,7 @@ import { C, GU_CENTERS, GU_LOCK_MESSAGE } from "../../lib/constants";
 import { useAuth } from "../../lib/AuthContext";
 import { supabase } from "../../lib/supabase";
 import { dateKey, yesterdayKey, targetWeekStartKey, formatWeekRange } from "../../utils/date";
-import HerecareModal from "./HerecareModal";
+import OrotCareModal from "./OrotCareModal";
 import { useConnectedDistricts } from "../../lib/useConnectedDistricts";
 
 // ───────── 마이페이지 ─────────
@@ -18,7 +18,7 @@ export function MyPage({ authed, onSignupStart, onLoginStart, userGu, moodLog, s
   const [weeklyLoading, setWeeklyLoading] = useState(false);
   const [weekStart, setWeekStart] = useState(null);
 
-  const [careModalOpen, setCareModalOpen] = useState(false); // HERECARE (준비 중)
+  const [careModalOpen, setCareModalOpen] = useState(false); // 오롯 케어 (준비 중)
 
   const center = userGu ? GU_CENTERS[userGu] : null;
   const totalDays = Object.keys(moodLog).length;
@@ -325,7 +325,7 @@ export function MyPage({ authed, onSignupStart, onLoginStart, userGu, moodLog, s
         </div>
       )}
 
-      {/* HERECARE — 구독 (준비 중) */}
+      {/* 오롯 케어 — 구독 (준비 중) */}
       <button
         onClick={() => setCareModalOpen(true)}
         style={{
@@ -346,7 +346,7 @@ export function MyPage({ authed, onSignupStart, onLoginStart, userGu, moodLog, s
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <span style={{ fontSize: 22 }}>🌱</span>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>HERECARE</div>
+            <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>오롯 케어</div>
             <div style={{ fontSize: 11, color: C.muted, fontWeight: 300, lineHeight: 1.5 }}>
               준비 중
             </div>
@@ -355,9 +355,9 @@ export function MyPage({ authed, onSignupStart, onLoginStart, userGu, moodLog, s
         <span style={{ fontSize: 14, color: C.muted }}>›</span>
       </button>
 
-      {/* HERECARE 모달 (준비 중) */}
+      {/* 오롯 케어 모달 (준비 중) */}
       {careModalOpen && (
-        <HerecareModal onClose={() => setCareModalOpen(false)} />
+        <OrotCareModal onClose={() => setCareModalOpen(false)} />
       )}
 
       {/* 1인가구 지원 */}
@@ -601,9 +601,9 @@ export default function Settings({ onClose, userGu }) {
   const handleLogout = async () => {
     if (!confirm("정말 로그아웃 하시겠어요?")) return;
     try {
-      localStorage.removeItem("imhere_user_gu");
-      localStorage.removeItem("imhere_mood_log");
-      localStorage.removeItem("sb-imhere-auth-token");
+      localStorage.removeItem("orot_user_gu");
+      localStorage.removeItem("orot_mood_log");
+      localStorage.removeItem("sb-orot-auth-token");
       await supabase.auth.signOut();
       window.location.reload();
     } catch (e) {
@@ -1375,7 +1375,7 @@ export default function Settings({ onClose, userGu }) {
       {/* 푸터 */}
       {view === "main" && (
         <div style={{ padding: "16px 24px", borderTop: `1px solid ${C.border}`, fontSize: 11, color: C.muted, textAlign: "center", fontWeight: 300 }}>
-          IMHERE v0.1
+          오롯 v0.1
         </div>
       )}
     </div>

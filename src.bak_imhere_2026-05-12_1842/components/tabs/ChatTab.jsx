@@ -6,7 +6,7 @@ import OrosiChat from "./OrosiChat";
 import DistrictChat from "./DistrictChat";
 
 // 채팅 탭 wrapper
-// - Heri 채널: 부모(MainApp)에서 props로 messages·sendMessage 등 받음
+// - 오로시 채널: 부모(MainApp)에서 props로 messages·sendMessage 등 받음
 // - 자치구 채널: 자체 fetch + realtime 구독으로 관리
 // - 발급번호 연결 안 된 사용자는 자치구 탭 자체 안 보임
 export default function ChatTab({ messages, input, setInput, sendMessage, typing, bottomRef, userGu }) {
@@ -193,7 +193,7 @@ export default function ChatTab({ messages, input, setInput, sendMessage, typing
               transition: "color .15s, border-color .15s",
             }}
           >
-            Heri
+            오로시
           </button>
           <button
             onClick={switchToDistrict}

@@ -13,6 +13,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
     storage: window.localStorage,
-    storageKey: 'sb-imhere-auth-token',
+    storageKey: 'sb-orot-auth-token',
   },
 });

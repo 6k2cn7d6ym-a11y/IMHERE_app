@@ -4,13 +4,13 @@ import { C } from "../../lib/constants";
 const SLIDES = [
   {
     emoji: "🌿",
-    title: "IMHERE이 삶을 꾸리고 있는",
+    title: "오롯이 삶을 꾸리고 있는",
     titleHighlight: "당신의 마음을 돌봐주세요",
     desc: null,
   },
   {
     emoji: "💬",
-    title: "Heri와",
+    title: "오로시와",
     titleHighlight: "마음 나눠요",
     desc: "어떤 말이든 들려주세요",
   },
