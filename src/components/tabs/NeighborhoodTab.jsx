@@ -52,7 +52,7 @@ function ProgramCard({ program }) {
 }
 
 export default function NeighborhoodTab({ userGu, openGuModal }) {
-  const { programs, loading, error } = usePrograms();
+  const { programs, loading, error, retry } = usePrograms(userGu);
 
   // 자치구 미설정
   if (!userGu) {
@@ -72,7 +72,7 @@ export default function NeighborhoodTab({ userGu, openGuModal }) {
     );
   }
 
-  // 로딩 중
+  // 로딩
   if (loading) {
     return (
       <div style={{ flex: 1, padding: "32px 26px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
@@ -94,14 +94,14 @@ export default function NeighborhoodTab({ userGu, openGuModal }) {
         <div style={{ fontSize: 12, color: C.sub, fontWeight: 300, lineHeight: 1.7, textAlign: "center", marginBottom: 20 }}>
           잠시 후 다시 시도해주세요.
         </div>
-        <button onClick={() => window.location.reload()} style={{ background: C.warm, color: "#fff", padding: "10px 22px", borderRadius: 8, fontSize: 13 }}>
+        <button onClick={retry} style={{ background: C.warm, color: "#fff", padding: "10px 22px", borderRadius: 8, fontSize: 13 }}>
           다시 시도
         </button>
       </div>
     );
   }
 
-  // 성공 - 데이터 분리
+  // 성공
   const { ours, city } = splitProgramsByGu(programs, userGu);
   const hasOurs = ours.length > 0;
   const hasCity = city.length > 0;
@@ -118,7 +118,7 @@ export default function NeighborhoodTab({ userGu, openGuModal }) {
         </div>
       </div>
 
-      {/* 시 단위 섹션 */}
+      {/* 시 단위 */}
       {hasCity && (
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
@@ -134,7 +134,7 @@ export default function NeighborhoodTab({ userGu, openGuModal }) {
         </div>
       )}
 
-      {/* 우리 자치구 섹션 */}
+      {/* 우리 자치구 */}
       <div style={{ marginBottom: 24 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12 }}>
           <span style={{ fontSize: 14 }}>📍</span>

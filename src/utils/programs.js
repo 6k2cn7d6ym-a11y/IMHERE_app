@@ -1,149 +1,53 @@
 import { useState, useEffect } from "react";
-import { CACHE_KEY, CACHE_TTL_MS, EMOTION_KEYWORDS } from "../lib/constants";
+import { supabase } from "../lib/supabase";
 
-// 한 행이 정서 카테고리인지
-function matchEmotion(row) {
-  if (row.SE_NM === "외로움") return true;
-  if (row.SE_NM !== "기타") return false;
-  const title = row.PARTCPTN_SJ || "";
-  return EMOTION_KEYWORDS.some((k) => title.includes(k));
-}
-
-// 종료일이 오늘 이후 (활성)
-function isActive(row) {
-  const end = row.PROGRS_DE2;
-  if (!end) return false;
+// 자기 자치구 + 서울시 자료만 가져옴 (활성 자료만)
+async function fetchPrograms(userGu) {
   const today = new Date();
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-  return end >= todayStr;
-}
+  const todayStr = `${today.getFullYear()}-${String(
+    today.getMonth() + 1
+  ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
-// API row → 앱 내부 형태로 변환
-function normalizeRow(row) {
-  return {
-    id: row.PARTCPTN_ID,
-    gu: row.ATDRC_NM,
-    title: (row.PARTCPTN_SJ || "").trim(),
-    startDate: row.PROGRS_DE1 || null,
-    endDate: row.PROGRS_DE2 || null,
-    link: row.RCEPT_MTH_LINK || null,
-  };
-}
+  const { data, error } = await supabase
+    .from("programs")
+    .select("*")
+    .in("gu", [userGu, "서울시"])
+    .gte("end_date", todayStr)
+    .order("start_date", { ascending: true });
 
-// 페이지네이션 fetch (1000건씩) — Supabase Edge Function 프록시 결로
-async function fetchProgramsPage(start, end) {
-  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-  const SUPABASE_ANON = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  if (error) throw error;
 
-  if (!SUPABASE_URL || !SUPABASE_ANON) {
-    throw new Error("Supabase 환경변수가 박혀있지 않아요");
-  }
-
-  const url = `${SUPABASE_URL}/functions/v1/programs-proxy?start=${start}&end=${end}`;
-  const res = await fetch(url, {
-    headers: {
-      apikey: SUPABASE_ANON,
-      Authorization: `Bearer ${SUPABASE_ANON}`,
-    },
-  });
-
-  if (!res.ok) {
-    let detail = "";
-    try {
-      const errJson = await res.json();
-      detail = errJson.error || "";
-    } catch {}
-    throw new Error(`Proxy ${res.status}${detail ? ` — ${detail}` : ""}`);
-  }
-
-  const json = await res.json();
-
-  // Edge Function이 에러 결로 응답 가능
-  if (json.error) {
-    throw new Error(json.error);
-  }
-
-  // 서울 API 응답 형식: { tbPartcptn: { RESULT, list_total_count, row } }
-  const OPENAPI_SERVICE = "tbPartcptn";
-
-  if (json.RESULT && json.RESULT.CODE && json.RESULT.CODE !== "INFO-000") {
-    throw new Error(`API: ${json.RESULT.MESSAGE || json.RESULT.CODE}`);
-  }
-  const payload = json[OPENAPI_SERVICE];
-  if (!payload) throw new Error("API 응답 형식 오류");
-  if (payload.RESULT && payload.RESULT.CODE !== "INFO-000") {
-    throw new Error(`API: ${payload.RESULT.MESSAGE || payload.RESULT.CODE}`);
-  }
-  return {
-    total: payload.list_total_count || 0,
-    rows: payload.row || [],
-  };
-}
-
-// 전체 가져와서 정제
-async function fetchAllPrograms() {
-  const PAGE_SIZE = 1000;
-  const first = await fetchProgramsPage(1, PAGE_SIZE);
-  let allRows = first.rows;
-  const total = first.total;
-  if (total > PAGE_SIZE) {
-    const remainingPages = Math.ceil((total - PAGE_SIZE) / PAGE_SIZE);
-    for (let i = 0; i < remainingPages; i++) {
-      const s = PAGE_SIZE * (i + 1) + 1;
-      const e = Math.min(PAGE_SIZE * (i + 2), total);
-      const page = await fetchProgramsPage(s, e);
-      allRows = allRows.concat(page.rows);
-    }
-  }
-  return allRows
-    .filter((r) => matchEmotion(r) && isActive(r))
-    .map(normalizeRow);
-}
-
-// 캐시 읽기 (6시간 이내면 사용)
-function readCache() {
-  try {
-    const raw = localStorage.getItem(CACHE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (!parsed.fetchedAt || !Array.isArray(parsed.programs)) return null;
-    const age = Date.now() - parsed.fetchedAt;
-    if (age > CACHE_TTL_MS) return null;
-    return parsed.programs;
-  } catch {
-    return null;
-  }
-}
-
-function writeCache(programs) {
-  try {
-    localStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({
-        fetchedAt: Date.now(),
-        programs,
-      })
-    );
-  } catch {}
+  // snake_case → camelCase 변환 (UI 결로 변경 안 되게)
+  return (data || []).map((p) => ({
+    id: p.id,
+    gu: p.gu,
+    title: p.title,
+    startDate: p.start_date,
+    endDate: p.end_date,
+    link: p.link,
+  }));
 }
 
 // 커스텀 훅: 우리 동네 탭에서 호출
-export function usePrograms() {
-  const [programs, setPrograms] = useState(() => readCache() || []);
-  const [loading, setLoading] = useState(() => readCache() === null);
+export function usePrograms(userGu) {
+  const [programs, setPrograms] = useState([]);
+  const [loading, setLoading] = useState(!!userGu);
   const [error, setError] = useState(null);
   const [retryToken, setRetryToken] = useState(0);
 
   useEffect(() => {
-    if (retryToken === 0 && readCache() !== null) return;
+    if (!userGu) {
+      setLoading(false);
+      setPrograms([]);
+      return;
+    }
     let cancelled = false;
     setLoading(true);
     setError(null);
-    fetchAllPrograms()
+    fetchPrograms(userGu)
       .then((data) => {
         if (cancelled) return;
         setPrograms(data);
-        writeCache(data);
         setLoading(false);
       })
       .catch((e) => {
@@ -154,15 +58,9 @@ export function usePrograms() {
     return () => {
       cancelled = true;
     };
-  }, [retryToken]);
+  }, [userGu, retryToken]);
 
-  // 다시 시도 — 캐시 비우고 재호출
-  const retry = () => {
-    try {
-      localStorage.removeItem(CACHE_KEY);
-    } catch {}
-    setRetryToken((n) => n + 1);
-  };
+  const retry = () => setRetryToken((n) => n + 1);
 
   return { programs, loading, error, retry };
 }
@@ -180,13 +78,9 @@ export function formatStartDate(dateStr) {
   return isStarted ? `${label}부터` : `${label} 시작`;
 }
 
-// 자치구별 + 시작일 오름차순 분리
+// 자치구별 분리 (이미 자기 자치구 + 서울시 자료만 있음)
 export function splitProgramsByGu(programs, gu) {
-  const ours = programs
-    .filter((p) => p.gu === gu)
-    .sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""));
-  const city = programs
-    .filter((p) => p.gu === "서울시")
-    .sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""));
+  const ours = programs.filter((p) => p.gu === gu);
+  const city = programs.filter((p) => p.gu === "서울시");
   return { ours, city };
 }
